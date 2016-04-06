@@ -9,10 +9,6 @@ import java.util.Vector;
  */
 public class Particle {
 
-    public static final int GLOBAL = 0x00;
-    public static final int LOCAL = 0x01;
-    public static final int FOCAL = 0x02;
-
     public static final int SPHERE = 0x10;
     public static final int ROTATED_RASTRIGIN = 0X11;
     public static final int ROSENBROCK = 0X12;
@@ -105,30 +101,4 @@ public class Particle {
         }
     }
 
-    private void globalTopology() {
-
-    }
-
-    private void localTopology() {
-
-    }
-
-    private  void focalTopology() {
-
-    }
-
-    public void updateGlobalPosition(int topology) {
-        switch (topology) {
-            case LOCAL:
-                localTopology();
-                break;
-            case FOCAL:
-                focalTopology();
-                break;
-            case GLOBAL:
-            default:
-                globalTopology();
-                break;
-        }
-    }
 }
