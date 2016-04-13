@@ -7,9 +7,9 @@ import java.io.*;
  */
 public class Main {
 
-    private static int N_PARTICLES = 10;
+    private static int N_PARTICLES = 30;
     private static int N_DIM = 30;
-    public static final int N_ITE = 100;
+    public static final int N_ITE = 10000;
 
     public static final String FILENAME = "./GlobalFitnessSphere.txt";
 
@@ -20,8 +20,8 @@ public class Main {
         fw = new FileWriter(file.getAbsolutePath());
         bw = new BufferedWriter(fw);
 
-        PSO pso = new PSO(N_DIM, N_PARTICLES, Function.SPHERE);
-        pso.start(PSO.FOCAL);
+        PSO pso = new PSO(N_DIM, N_PARTICLES, Function.ROSENBROCK);
+        pso.start(PSO.GLOBAL);
 
     }
 

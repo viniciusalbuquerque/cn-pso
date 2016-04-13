@@ -30,7 +30,9 @@ public class Particle {
 
         for(int i = 0; i < numDim; i++) {
             this.position[i] = (Math.random() * 100 * Math.pow(-1, Math.round(Math.random())));
-            this.velocity[i] = (Math.random() * 10);
+//            System.out.println(this.position[i]);
+//            this.velocity[i] = (Math.random() * 10);
+            this.velocity[i] = (Math.random() * 10 * Math.pow(-1, Math.round(Math.random())));
         }
 
         bestPosition = this.position;
