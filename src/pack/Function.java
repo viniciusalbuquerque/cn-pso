@@ -34,10 +34,17 @@ public class Function {
     public static double rosenbrockFunction(double[] position) {
         double result = 0;
         for(int i = 1; i < position.length - 1; i++) {
-            result += 100 * Math.pow((position[i - 1] - Math.pow(position[i],2)),2) -
-                    Math.pow(position[i] - 1,2);
+            result += Math.pow((1 - position[i]),2) + (100 * Math.pow((position[i-1] - Math.pow(position[i],2)),2));
         }
+        System.out.println(result);
         return result;
+//        double result = 0;
+//        for(int i = 1; i < position.length - 1; i++) {
+//            result += 100 * Math.pow((position[i - 1] - Math.pow(position[i],2)),2) -
+//                    Math.pow(position[i] - 1,2);
+//        }
+//        System.out.println(result);
+//        return result;
     }
 
 

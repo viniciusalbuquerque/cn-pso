@@ -133,10 +133,14 @@ public class Particle {
     }
 
     public List<Particle> getNeighboors() {
+        if(neighboors == null) {
+            neighboors = new ArrayList<>();
+        }
         return neighboors;
     }
 
     public double[] getPosition() {
         return position;
     }
+    public double[] getGlobalPosition() {return this.globalPosition; }
 }

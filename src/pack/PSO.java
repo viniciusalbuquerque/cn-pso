@@ -17,13 +17,9 @@ public class PSO {
     private double[] gBest;
     private double globalFitness;
     private int function;
-    File file = new File("./media.txt");
-    FileWriter fw;
-    BufferedWriter bw;
 
     public PSO(int numDim, int numPart, int function) throws IOException {
-        fw = new FileWriter(file.getAbsolutePath());
-        bw = new BufferedWriter(fw);
+
         this.function = function;
         this.particles = new ArrayList<>();
         this.globalFitness = 999999999;
@@ -35,7 +31,6 @@ public class PSO {
                 gBest = particle.getBestPosition();
             }
         }
-
     }
 
     private void calculateInfo() {
@@ -47,20 +42,19 @@ public class PSO {
     }
 
     private void globalTopology() throws IOException {
-        for(int it = 0; it < Main.N_ITE; it++) {
+        for (int it = 0; it < Main.N_ITE; it++) {
             calculateInfo();
-            for(Particle p : this.particles) {
-                if(p.getFitness() < this.globalFitness) {
+            for (Particle p : this.particles) {
+                if (p.getFitness() < this.globalFitness) {
                     gBest = p.getBestPosition();
                     globalFitness = p.getFitness();
-                    bw.write(String.valueOf(globalFitness) + "\n");
                 }
                 p.setGlobalPosition(gBest);
             }
         }
     }
 
-    private void localTopology() {
+    private void localTopology() throws IOException {
         for(int i = 0; i < this.particles.size(); i++) {
             Particle left;
             Particle right;
@@ -82,54 +76,67 @@ public class PSO {
 
         for(int i = 0; i < Main.N_ITE; i++) {
             calculateInfo();
-            for(Particle part : this.particles) {
-                compareGlobalNeighbors(part);
-            }
+            compareGlobalNeighbors();
         }
 
         checkGBest();
 
     }
 
-    private void compareGlobalNeighbors(Particle part) {
-        double fitness = part.calculateFitness(this.function);
-        int index = -1;
-        double[] gb = part.getPosition();
-        for(int j = 0; j < part.getNeighboors().size(); j++) {
-            Particle p = part.getNeighboors().get(j);
-            double newFitness = p.calculateFitness(this.function);
-            if(newFitness < fitness) {
-                fitness = newFitness;
-                index = j;
-                gb = p.getPosition();
+    private void compareGlobalNeighbors() {
+        for(Particle part : this.particles) {
+            double fitness = part.calculateFitness(this.function);
+            for(Particle neigh : part.getNeighboors()) {
+                double newFitness = neigh.calculateFitness(this.function);
+                if(newFitness < fitness) {
+                    fitness = newFitness;
+                    part.setGlobalPosition(neigh.getPosition());
+                }
+            }
+            for(Particle neigh : part.getNeighboors()) {
+                neigh.setGlobalPosition(part.getGlobalPosition());
             }
         }
 
-        if(index != -1) {
-            part.setGlobalPosition(gb);
-        }
-
-        for(Particle particle : part.getNeighboors()) {
-            calculateInfo();
-            particle.setGlobalPosition(gb);
-        }
+//        double fitness = part.calculateFitness(this.function);
+//        int index = -1;
+//        double[] gb = part.getPosition();
+//        for(int j = 0; j < part.getNeighboors().size(); j++) {
+//            Particle p = part.getNeighboors().get(j);
+//            double newFitness = p.calculateFitness(this.function);
+//            if(newFitness < fitness) {
+//                fitness = newFitness;
+//                index = j;
+//                gb = p.getPosition();
+//            }
+//
+//            if(newFitness < globalFitness) {
+//                globalFitness = newFitness;
+//                System.out.println(globalFitness);
+////                bw.write(String.valueOf(globalFitness) + "\n");
+//            }
+//        }
+//
+//        if(index != -1) {
+//            part.setGlobalPosition(gb);
+//        }
+//
+//        for(Particle particle : part.getNeighboors()) {
+//            particle.setGlobalPosition(gb);
+//        }
     }
-    private  void focalTopology() {
+    private  void focalTopology() throws IOException {
         Particle p = this.particles.get(0);
 
         for(Particle particle : this.particles) {
             if(p != particle) {
                 particle.addNeighboor(p);
-            } else {
-                p.addNeighboor(particle);
             }
         }
 
         for(int i = 0; i < Main.N_ITE; i++) {
             calculateInfo();
-            for(Particle part : this.particles) {
-                compareGlobalNeighbors(part);
-            }
+            compareGlobalNeighbors();
         }
         checkGBest();
     }
@@ -145,7 +152,6 @@ public class PSO {
     }
 
     public void start(int topology) throws IOException {
-//        for (int i = 0; i < Main.N_ITE; i++) {
         switch (topology) {
             case LOCAL:
                 localTopology();
@@ -158,18 +164,9 @@ public class PSO {
                 globalTopology();
                 break;
         }
-//            if(i == 0) {
-//                bw.write(String.valueOf(String.valueOf(globalFitness)) + "\n\n");
-//            }
-            double media = getMedia();
-            bw.write(String.valueOf(media) + "\n");
-//            System.out.println(media);
-//            pw.write(String.valueOf(getMedia()) + "\n");
-//        }
 
-//        System.out.println("\n\n" + String.valueOf(globalFitness));
-//        bw.write(String.valueOf("\n\n\n\n\n\n" + String.valueOf(globalFitness)));
-        bw.close();
+
+        System.out.println(globalFitness);
 
     }
 
@@ -179,5 +176,9 @@ public class PSO {
             media += p.getMedia();
         }
         return media/this.particles.size();
+    }
+
+    public double getGlobalFitness() {
+        return globalFitness;
     }
 }
