@@ -15,8 +15,11 @@ public class PSO {
 
     private List<Particle> particles;
     private double[] gBest;
-    private double globalFitness;
+    private float globalFitness;
     private int function;
+
+    private float[] mediaFit;
+    private int index;
 
     public PSO(int numDim, int numPart, int function) throws IOException {
 
@@ -24,13 +27,15 @@ public class PSO {
         this.particles = new ArrayList<>();
         this.globalFitness = 999999999;
         for(int i = 0; i < numPart; i++) {
-            Particle particle = new Particle(numDim);
+            Particle particle = new Particle(numDim, function);
             this.particles.add(particle);
             if(gBest == null) {
                 gBest = new double[particle.getBestPosition().length];
                 gBest = particle.getBestPosition();
             }
         }
+
+        mediaFit = new float[Main.N_ITE];
     }
 
     private void calculateInfo() {
@@ -51,6 +56,9 @@ public class PSO {
                 }
                 p.setGlobalPosition(gBest);
             }
+//            System.out.println(globalFitness);
+            mediaFit[index] = globalFitness;
+            index++;
         }
     }
 
@@ -77,9 +85,8 @@ public class PSO {
         for(int i = 0; i < Main.N_ITE; i++) {
             calculateInfo();
             compareGlobalNeighbors();
+            checkGBest();
         }
-
-        checkGBest();
 
     }
 
@@ -130,25 +137,28 @@ public class PSO {
 
         for(Particle particle : this.particles) {
             if(p != particle) {
-                particle.addNeighboor(p);
+                p.addNeighboor(particle);
             }
         }
 
         for(int i = 0; i < Main.N_ITE; i++) {
             calculateInfo();
             compareGlobalNeighbors();
+            checkGBest();
         }
-        checkGBest();
     }
 
     private void checkGBest() {
         for(Particle part : this.particles) {
-            double fit = part.getFitness();
+            float fit = part.getFitness();
             if(fit < globalFitness) {
                 globalFitness = fit;
                 this.gBest = part.getBestPosition();
             }
         }
+        mediaFit[index] = globalFitness;
+        index++;
+//        System.out.println(this.globalFitness);
     }
 
     public void start(int topology) throws IOException {
@@ -166,7 +176,7 @@ public class PSO {
         }
 
 
-        System.out.println(globalFitness);
+//        System.out.println(globalFitness);
 
     }
 
@@ -180,5 +190,13 @@ public class PSO {
 
     public double getGlobalFitness() {
         return globalFitness;
+    }
+
+    public float[] getMediaFit() {
+        return mediaFit;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

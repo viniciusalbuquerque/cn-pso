@@ -1,12 +1,16 @@
 # attach(GlobalFitnessSphere.txt)
-fpe = read.table("GlobalFitnessSphere.txt")
-fpe = read.table("GlobalFitnessSphere.txt", col.names=c("fitness"))
+# fpe = read.table("GlobalFitnessSphere.txt")
+# library(ggplot2)
+# Box plot 
+fpe = read.table("GlobalFitnessRosenbrock.txt", col.names=c("fitness"))
 iteration = array(1:10000)
-fpe
+# fpe
 attach(fpe)
-
-plot(iteration,fitness)
+bp <- ggplot(fpe, aes(x=dose, y=len)) + geom_boxplot()
+bp
+# plot(iteration,fitness)
+# boxplot(fitness)
 # abline(lm(fpe~x))
 # plot(wt, mpg) 
 # abline(lm(mpg~wt))
-title("Regression of MPG on Weight")
+# title("Fitness variation to fixed W")

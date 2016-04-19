@@ -16,11 +16,16 @@ public class Particle {
     private double[] position;
     private double[] bestPosition;
     private double[] globalPosition;
-    private double fitness;
+    private float fitness;
 
     private List<Particle> neighboors;
 
-    public Particle (int numDim) {
+    private float VEL_MAX;
+    private float VEL_MIN;
+    private float POS_MAX;
+    private float POS_MIN;
+
+    public Particle (int numDim, int function) {
 
         this.fitness = 999999999;
         this.position = new double[numDim];
@@ -28,25 +33,73 @@ public class Particle {
         this.bestPosition = new double[numDim];
         this.globalPosition = new double[numDim];
 
+        defineParams(function);
+
         for(int i = 0; i < numDim; i++) {
-            this.position[i] = (Math.random() * 100 * Math.pow(-1, Math.round(Math.random())));
-//            System.out.println(this.position[i]);
-//            this.velocity[i] = (Math.random() * 10);
-            this.velocity[i] = (Math.random() * 10 * Math.pow(-1, Math.round(Math.random())));
+            this.position[i] = (Math.random() * POS_MAX * Math.pow(-1, Math.round(Math.random())));
+            this.velocity[i] = (Math.random() * VEL_MAX * Math.pow(-1, Math.round(Math.random())));
         }
 
         bestPosition = this.position;
         globalPosition = bestPosition;
+    }
 
+    private void defineParams(int function) {
+        switch (function) {
+            case Function.SPHERE:
+                VEL_MAX = 10f;
+                VEL_MIN = -10f;
+                POS_MAX = 100f;
+                POS_MIN = -100f;
+//                System.out.println("SPHERE");
+                break;
+            case Function.ROTATED_RASTRIGIN:
+                VEL_MAX = 10f;
+                VEL_MIN = -10f;
+                POS_MAX = 100f;
+                POS_MIN = -100f;
+//                System.out.println("RR");
+                break;
+            case Function.ROSENBROCK:
+            default:
+                VEL_MAX = 0.5f;
+                VEL_MIN = -0.5f;
+                POS_MAX = 5.12f;
+                POS_MIN = -5.12f;
+//                System.out.println("ROB");
+                break;
+        }
+    }
+
+    private double verifyPositionRange(double pos) {
+        if(pos > POS_MAX) {
+            return POS_MAX;
+        } else if (pos < POS_MIN) {
+            return POS_MIN;
+        }
+        return pos;
+    }
+
+    private double verifyVelocityRange(double vel) {
+        if(vel > VEL_MAX) {
+            return  VEL_MAX;
+        } else if (vel < VEL_MIN) {
+            return VEL_MIN;
+        }
+        return vel;
     }
 
     public double[] newVelocity() {
+        W -= W/Main.N_ITE;
         double[] newVelocity = new double[this.position.length];
         for(int i = 0; i < this.velocity.length; i++) {
             double R1 = Math.random();
             double R2 = Math.random();
-            newVelocity[i] = (W * this.velocity[i] + c1 * R1 * Math.random() * (this.bestPosition[i] - this.position[i]) +
+            double vel = (W * this.velocity[i] + c1 * R1 * Math.random() * (this.bestPosition[i] - this.position[i]) +
                     c2 * R2 * Math.random() * (this.globalPosition[i] - this.position[i]));
+
+            newVelocity[i] = verifyVelocityRange(vel);
+
         }
         return newVelocity;
     }
@@ -55,18 +108,12 @@ public class Particle {
         double[] newPosition = new double[this.position.length];
         for (int i = 0; i < this.position.length; i++) {
             double pos = this.position[i] + this.velocity[i];
-            if(pos > 100) {
-                newPosition[i] = (100.0);
-            } else if(pos < -100) {
-                newPosition[i] = (-100.0);
-            } else {
-                newPosition[i] = (pos);
-            }
+            newPosition[i] = verifyPositionRange(pos);
         }
         return newPosition;
     }
 
-    public double calculateFitness(int type) {
+    public float calculateFitness(int type) {
         switch (type) {
             case Function.SPHERE:
                 return Function.sphereFunction(this.position);
@@ -79,14 +126,14 @@ public class Particle {
     }
 
     public void updateBestPosition(int function) {
-        double fit = calculateFitness(function);
+        float fit = calculateFitness(function);
         if(fit < this.fitness) {
             bestPosition = position;
             this.fitness = fit;
         }
     }
 
-    public double getFitness() { return this.fitness; }
+    public float getFitness() { return this.fitness; }
 
 
     public double getMedia() {
@@ -101,7 +148,6 @@ public class Particle {
         if(neighboors == null || neighboors.size() == 0) {
             neighboors = new ArrayList<>();
         }
-
         neighboors.add(particle);
     }
 
