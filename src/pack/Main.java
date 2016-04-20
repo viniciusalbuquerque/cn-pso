@@ -21,7 +21,8 @@ public class Main {
 //    public static final String FILENAME = "./LocalFitnessROSENBROCKWVariation.txt";
 //    public static final String FILENAME = "./GlobalFitnessRRWVariation.txt";
 //    public static final String FILENAME = "./FocalFitnessRRWVariation.txt";
-    public static final String FILENAME = "./LocalFitnessRRWVariation.txt";
+//    public static final String FILENAME = "./LocalFitnessRRWVariation.txt";
+    public static final String FILENAME = "./iterations.txt";
 
 
     public static void main(String[] args) throws IOException {
@@ -31,20 +32,20 @@ public class Main {
         fw = new FileWriter(file.getAbsolutePath());
         bw = new BufferedWriter(fw);
 
-        float[] mediaFit = new float[N_ITE];
-        for(int i = 0; i < N_TESTES; i++) {
-            PSO pso = new PSO(N_DIM, N_PARTICLES, Function.ROTATED_RASTRIGIN);
-            pso.setIndex(0);
-            pso.start(PSO.LOCAL);
-            float[] mf = pso.getMediaFit();
-            for(int j = 0; j < N_ITE; j++) {
-                mediaFit[j] += mf[j];
-            }
-        }
+//        float[] mediaFit = new float[N_ITE];
+//        for(int i = 0; i < N_TESTES; i++) {
+//            PSO pso = new PSO(N_DIM, N_PARTICLES, Function.ROTATED_RASTRIGIN);
+//            pso.setIndex(0);
+//            pso.start(PSO.LOCAL);
+//            float[] mf = pso.getMediaFit();
+//            for(int j = 0; j < N_ITE; j++) {
+//                mediaFit[j] += mf[j];
+//            }
+//        }
 
-        for(int j = 0; j < N_ITE; j++) {
-            mediaFit[j] /= N_TESTES;
-            bw.write(String.valueOf(mediaFit[j]) + "\n");
+        for(int j = 1; j <= N_ITE; j++) {
+//            mediaFit[j] /= N_TESTES;
+            bw.write(String.valueOf(j) + "\n");
         }
         bw.close();
 
